@@ -1,8 +1,15 @@
 import pygame as pg
 import random
 
+GRID_HEIGHT = 80
+GRID_WIDTH = 100
+CELL_SIZE = 10
+SCREEN_WIDTH = GRID_WIDTH * CELL_SIZE
+SCREEN_HEIGHT = GRID_HEIGHT * CELL_SIZE
+INITIAL_CELLS = 2000
+
 def next_generation(matrix):
-    new_matrix = [[0 for _ in range(25)] for _ in range(25)]
+    new_matrix = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
 
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -43,17 +50,24 @@ def next_generation(matrix):
         
     return new_matrix
 
-def main():
-    matrix = [[0 for _ in range(25)] for _ in range(25)]
+def draw(matrix: list[list], screen: pg.Surface):
+    for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                if matrix[i][j] == 1:
+                    cell_rect = pg.Rect(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                    pg.draw.rect(screen, pg.Color(255,255,255), cell_rect)
 
-    for i in range(100):
-        y = random.randint(0,24)
-        x = random.randint(0,24)
+def main():
+    matrix = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
+
+    for i in range(INITIAL_CELLS):
+        y = random.randint(0,GRID_HEIGHT - 1)
+        x = random.randint(0,GRID_WIDTH - 1)
         matrix[y][x] = 1
 
 
     pg.init()
-    screen = pg.display.set_mode((500, 500))
+    screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pg.time.Clock()
 
     running = True
@@ -67,10 +81,8 @@ def main():
 
         screen.fill(pg.Color(0,0,0))
 
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
-                if matrix[i][j] == 1:
-                    pg.draw.rect(screen, pg.Color(255,255,255), pg.Rect(j*20, i*20, 20, 20))
+        draw(matrix, screen)
+        
 
         pg.display.flip()
         clock.tick(10)
