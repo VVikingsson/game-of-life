@@ -1,12 +1,13 @@
 import pygame as pg
 import random
 
+
 GRID_HEIGHT = 80
 GRID_WIDTH = 100
 CELL_SIZE = 10
 SCREEN_WIDTH = GRID_WIDTH * CELL_SIZE
 SCREEN_HEIGHT = GRID_HEIGHT * CELL_SIZE
-INITIAL_CELLS = 2000
+INITIAL_CELLS = 500
 
 def next_generation(matrix):
     new_matrix = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
@@ -14,25 +15,7 @@ def next_generation(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
             
-            neighbours = []
-            if i - 1 >= 0:
-                neighbours.append(matrix[i-1][j])
-                if j - 1 >= 0:
-                    neighbours.append(matrix[i-1][j-1])
-                if j + 1 < len(matrix[i]):
-                    neighbours.append(matrix[i-1][j+1])
-
-            if i + 1 < len(matrix):
-                neighbours.append(matrix[i+1][j])
-                if j - 1 >= 0:
-                    neighbours.append(matrix[i+1][j-1])
-                if j + 1 < len(matrix[i]):
-                    neighbours.append(matrix[i+1][j+1])
-            if j - 1 >= 0:
-                neighbours.append(matrix[i][j-1])
-            if j + 1 < len(matrix[i]):
-                neighbours.append(matrix[i][j+1])
-            
+            neighbours = get_neighbours(matrix, i, j)
             cell = matrix[i][j]
             if cell == 1:
     # Any live cell with fewer than two living neighbors dies
@@ -50,17 +33,38 @@ def next_generation(matrix):
         
     return new_matrix
 
+def get_neighbours(matrix: list[list], i: int, j: int) -> list[int]:
+    neighbours = []
+    
+    if i - 1 >= 0:
+        neighbours.append(matrix[i-1][j])
+        if j - 1 >= 0:
+            neighbours.append(matrix[i-1][j-1])
+            neighbours.append(matrix[i][j-1])
+        if j + 1 < len(matrix[i]):
+            neighbours.append(matrix[i-1][j+1])
+            neighbours.append(matrix[i][j+1])
+
+    if i + 1 < len(matrix):
+        neighbours.append(matrix[i+1][j])
+        if j - 1 >= 0:
+            neighbours.append(matrix[i+1][j-1])
+        if j + 1 < len(matrix[i]):
+            neighbours.append(matrix[i+1][j+1])
+
+    return neighbours
+
 def draw(matrix: list[list], screen: pg.Surface):
     for i in range(len(matrix)):
             for j in range(len(matrix[i])):
                 if matrix[i][j] == 1:
                     cell_rect = pg.Rect(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE)
-                    pg.draw.rect(screen, pg.Color(255,255,255), cell_rect)
+                    pg.draw.rect(screen, pg.Color(random.randint(100,255),random.randint(100,255),random.randint(100,255)), cell_rect)
 
 def main():
     matrix = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
 
-    for i in range(INITIAL_CELLS):
+    for _ in range(INITIAL_CELLS):
         y = random.randint(0,GRID_HEIGHT - 1)
         x = random.randint(0,GRID_WIDTH - 1)
         matrix[y][x] = 1
